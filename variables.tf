@@ -1,3 +1,9 @@
+variable "instance_name" {
+  type        = string
+  description = "The name of the EC2 instance"
+  default     = "terraformed-ec2-instance"
+}
+
 variable "instance_type" {
   type        = string
   description = "The type of EC2 instance to run"
@@ -20,6 +26,20 @@ variable "root_volume_size" {
   type        = number
   description = "The size of the root volume in GB"
   default     = 8
+}
+
+variable "public_access_key" {
+  type        = string
+  description = "The public access key to use for SSH"
+}
+
+variable "ebs_block_devices" {
+  type        = list(object({
+    device_name = string
+    volume_size = number
+  }))
+  description = "A list of EBS block devices to attach to the instance"
+  default     = null
 }
 
 variable "enable_hybernation" {
