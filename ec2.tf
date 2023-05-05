@@ -4,15 +4,16 @@ resource "aws_instance" "this" {
 
   hibernation = var.enable_hibernation
 
-  instance_profile = var.instance_profile_policy_path != "" ? aws_iam_instance_profile.ec2_profile[0].name : ""
+  iam_instance_profile = length(aws_iam_instance_profile.ec2_instance_profile) == 1 ? aws_iam_instance_profile.ec2_instance_profile[0] : null
 
   user_data = var.user_data
 
   key_name = aws_key_pair.access_key.key_name
 
   root_block_device {
-    volume_size = var.root_volume_size
-    kms_key_id = aws_kms_alias.eks.target_key_id
+    volume_size           = var.root_volume_size
+    encrypted             = true
+    kms_key_id            = aws_kms_key.this.arn
     delete_on_termination = true
   }
 
@@ -23,18 +24,21 @@ resource "aws_instance" "this" {
       device_name = ebs_block_device.value.device_name
       volume_size = ebs_block_device.value.volume_size
       encrypted   = true
-      kms_key_id  = aws_kms_alias.eks.target_key_id
+      kms_key_id  = aws_kms_key.this.arn
     }
+  }
+
+  network_interface {
+    network_interface_id = aws_network_interface.this.id
+    device_index         = 0
   }
 
   credit_specification {
     cpu_credits = "unlimited"
   }
 
-  tags = vars.default_tags
+  tags = merge({
+    Name = var.instance_name
+  }, var.default_tags)
 
-  validation {
-    condition     = var.instance_type == "t3.micro" || var.instance_type == "t3.medium" || var.instance_type == "t3.large"
-    error_message = "Instance type must be t3.micro, t3.medium or t3.large"
-  }
 }

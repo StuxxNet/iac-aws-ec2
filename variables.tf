@@ -8,6 +8,42 @@ variable "instance_type" {
   type        = string
   description = "The type of EC2 instance to run"
   default     = "t3.micro"
+  validation {
+    condition     = var.instance_type == "t3.micro" || var.instance_type == "t3.medium" || var.instance_type == "t3.large"
+    error_message = "Instance type must be t3.micro, t3.medium or t3.large"
+  }
+}
+
+variable "associate_public_ip_address" {
+  type        = bool
+  description = "Associate a public IP address with the instance"
+  default     = true
+}
+
+variable "private_ip" {
+  type        = string
+  description = "The private IP address to assign to the instance"
+}
+
+variable "vpc_id" {
+  type        = string
+  description = "The VPC ID to launch the instance in"
+}
+
+variable "subnet_id" {
+  type        = string
+  description = "The subnet ID to launch the instance in"
+}
+
+variable "security_group_rules" {
+  type = map(object({
+    type        = string
+    port        = number
+    protocol    = string
+    cidr_blocks = list(string)
+  }))
+  description = "A list of security group rules to apply to the instance"
+  default     = null
 }
 
 variable "instance_profile_policy_path" {
@@ -34,7 +70,7 @@ variable "public_access_key" {
 }
 
 variable "ebs_block_devices" {
-  type        = list(object({
+  type = list(object({
     device_name = string
     volume_size = number
   }))
@@ -42,7 +78,7 @@ variable "ebs_block_devices" {
   default     = null
 }
 
-variable "enable_hybernation" {
+variable "enable_hibernation" {
   type        = bool
   description = "Enable hibernation for the instance"
   default     = false
