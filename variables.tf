@@ -9,8 +9,8 @@ variable "instance_type" {
   description = "The type of EC2 instance to run"
   default     = "t3.micro"
   validation {
-    condition     = var.instance_type == "t3.micro" || var.instance_type == "t3.medium" || var.instance_type == "t3.large"
-    error_message = "Instance type must be t3.micro, t3.medium or t3.large"
+    condition     = var.instance_type == "t3.micro" || var.instance_type == "t3.medium" || var.instance_type == "t3.large" || var.instance_type == "t3.xlarge"
+    error_message = "Instance type must be t3.micro, t3.medium, t3.large or t3.xlarge"
   }
 }
 
